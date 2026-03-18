@@ -1,36 +1,29 @@
-class KubernetesClusterPlugin():
+from abc import ABC, abstractmethod
+
+
+class KubernetesClusterPlugin(ABC):
     """
-    An abstract base class for writing Kubernetes cluster provider plugins.
-
-    - Implement the methods `create_cluster` and `delete_cluster`.
-    - Create the method `__init__(self, config, basepath, cwd)` to
-      handle API-specific configuration.
-
-    Example:
-        .. code:: python
-          import os.path
-
-          from interface import KubernetesClusterPlugin
-          from apiX_library import cluster_api_class as ClusterAPI
-
-          class PluginX(KubernetesClusterPlugin):
-
-              def __init__(self, config, basepath, cwd):
-                  self.config = config
-                  self.basepath = basepath  # find other config files here
-                  self.cwd = cwd  # create new files here
-
-              def create_cluster(self):
-                  kubeconfig_path = os.path.join(self.cwd, 'kubeconfig.yaml')
-                  ClusterAPI(name=self.config['name']).create(kubeconfig_path)
-
-              def delete_cluster(self, cluster_name):
-                  ClusterAPI(name=self.config['name']).delete()
-        ..
+    Abstract base class for Kubernetes cluster plugins.
+    Defines the interface that all cluster plugins must implement.
     """
 
-    def create_cluster(self):
+    @abstractmethod
+    def __init__(self, plugin_config, basepath='.', cwd='.', name=None):
+        """
+        Initializes the plugin with its configuration.
+        :param plugin_config: A dictionary containing the plugin-specific configuration.
+        :param basepath: The base directory for template files.
+        :param cwd: The current working directory for writing output files.
+        :param name: The name of the test run / cluster.
+        """
         raise NotImplementedError
 
+    @abstractmethod
+    def create_cluster(self):
+        """Creates and provisions a Kubernetes cluster."""
+        raise NotImplementedError
+
+    @abstractmethod
     def delete_cluster(self):
+        """Deletes/tears down the Kubernetes cluster."""
         raise NotImplementedError
